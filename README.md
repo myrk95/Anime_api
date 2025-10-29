@@ -1,7 +1,27 @@
 # Anime_api
-Crear una API per a a l'exercici dels suggeriments de anime que tingui la següent funcionalitat:
-Obtenir recomanacions
-Entrenar l'algorisme
-Obtenir la versió
-Testar l'algorisme
-Crear algun consumidor d'aquesta API. Pot ser una aplicació de consola, una web, una app, etc.
+Anime_API
+
+API per a l’exercici de suggeriments d’anime amb les següents funcionalitats:
+
+# Funcionalitats
+
+# Obtenir recomanacions
+Permet obtenir recomanacions d’anime segons l’historial o preferències de l’usuari.
+
+# Entrenar l’algorisme
+Reentrena el sistema de recomanació amb les dades més recents.
+
+# Obtenir la versió
+Consulta la versió actual del model o de l’API.
+
+# Testar l’algorisme
+Permet provar el model amb un conjunt de dades de test.
+
+# Consumidor de l’API
+Es pot crear un consumidor per aquesta API, ja sigui:
+
+Aplicació de consola
+
+Web
+
+App mòbil

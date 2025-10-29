@@ -27,6 +27,4 @@ class Users:
         return self.__mail
     
     def getPassword(self):
-        return self.__password
-    
-    
+        return self.__password 

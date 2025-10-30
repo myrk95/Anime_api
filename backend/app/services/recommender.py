@@ -5,11 +5,15 @@ MIN_RATINGS_ANIME = 100
 MIN_RATINGS_USER = 10
 MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
-CORRELATION_FILE = "correlation.json"
+CORRELATION_FILE = "data_base/correlation.json"
+
+ANIME_CSV_PATH = "data_base/data/anime.csv"
+RATINGS_CSV_PATH = "data_base/data/rating.csv"
 
 
 class Recommender:
-    def __init__(self, anime_path, ratings_path,
+    def __init__(self, anime_path = ANIME_CSV_PATH, 
+                 ratings_path = RATINGS_CSV_PATH,
                  min_ratings_anime=MIN_RATINGS_ANIME,
                  min_ratings_user=MIN_RATINGS_USER,
                  max_ratings_user=MAX_RATINGS_USER,

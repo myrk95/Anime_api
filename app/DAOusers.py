@@ -25,7 +25,10 @@ class DAOusers:
     def eliminar_usuario(self, idusuario):
         self.cursor.execute('DELETE FROM users WHERE idusers=%s', (idusuario,))
         self.connection.commit()
-        return self.cursor.rowcount > 0
+        if self.cursor.rowcount > 0:
+            return True
+        else:
+            return False
 
     def mostrar_usuarios(self):
         self.cursor.execute('SELECT * FROM users')

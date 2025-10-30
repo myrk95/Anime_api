@@ -8,7 +8,7 @@ class DAOusers:
 
     def crear_usuario(self, nombre, apellidos, mail, password):
         self.cursor.execute(
-            'INSERT INTO users (nombre, apellidos, mail, password) VALUES (%s, %s, %s, %s)',
+            'INSERT INTO usuarios (nombre, apellidos, mail, password) VALUES (%s, %s, %s, %s)',
             (nombre, apellidos, mail, password)
         )
         self.connection.commit()
@@ -16,14 +16,14 @@ class DAOusers:
 
     def actualizar_usuario(self, idusuario, nuevo_nombre, nuevo_apellidos, nuevo_mail, nuevo_password):
         self.cursor.execute(
-            'UPDATE users SET nombre=%s, apellidos=%s, mail=%s, password=%s WHERE idusers=%s',
+            'UPDATE usuarios SET nombre=%s, apellidos=%s, mail=%s, password=%s WHERE id_usuario=%s',
             (nuevo_nombre, nuevo_apellidos, nuevo_mail, nuevo_password, idusuario)
         )
         self.connection.commit()
         return self.cursor.rowcount > 0
 
     def eliminar_usuario(self, idusuario):
-        self.cursor.execute('DELETE FROM users WHERE idusers=%s', (idusuario,))
+        self.cursor.execute('DELETE FROM usuario WHERE id_usuario=%s', (idusuario,))
         self.connection.commit()
         if self.cursor.rowcount > 0:
             return True
@@ -31,7 +31,7 @@ class DAOusers:
             return False
     
     def autenticar_usuario(self, mail, password):
-        self.cursor.execute('SELECT * FROM users WHERE mail=%s AND password=%s', (mail, password))
+        self.cursor.execute('SELECT * FROM usuarios WHERE mail=%s AND password=%s', (mail, password))
         user = self.cursor.fetchone()
         if user:
             return user
@@ -40,14 +40,14 @@ class DAOusers:
 
     def mostrar_usuario_act(self, mail_actual):
         self.cursor.execute(
-            'SELECT idusers, nombre, apellidos, mail, rol FROM users WHERE mail=%s', (mail_actual,))
+            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuario WHERE mail=%s', (mail_actual,))
         return self.cursor.fetchone()
     
     def mostrar_usuarios(self, mail_actual):
-        self.cursor.execute('SELECT rol FROM users WHERE mail=%s', (mail_actual,))
+        self.cursor.execute('SELECT rol FROM usuarios WHERE mail=%s', (mail_actual,))
         result = self.cursor.fetchone()
         if result and result[0] == 'admin':
-            self.cursor.execute('SELECT idusers, nombre, apellidos, mail, rol FROM users')
+            self.cursor.execute('SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios')
             return self.cursor.fetchall()
         else:
             return None  

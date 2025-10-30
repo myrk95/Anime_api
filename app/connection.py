@@ -1,7 +1,7 @@
 import mysql.connector
 
 class Connection:
-    def __init__(self, host="localhost", user="root", password="123456", database="usuarios_anime"):
+    def __init__(self, host="localhost", user="root", password="Kronos1995.", database="usuarios_anime"):
         self.host = host
         self.user = user
         self.password = password

@@ -28,3 +28,6 @@ class Users:
     
     def getPassword(self):
         return self.__password 
+    
+    def __str__(self):
+        return f"{self.__nombre} {self.__apellidos} ({self.__mail})"

@@ -29,7 +29,26 @@ class DAOusers:
             return True
         else:
             return False
+    
+    def autenticar_usuario(self, mail, password):
+        self.cursor.execute('SELECT * FROM users WHERE mail=%s AND password=%s', (mail, password))
+        user = self.cursor.fetchone()
+        if user:
+            return user
+        else:
+            return None
 
-    def mostrar_usuarios(self):
-        self.cursor.execute('SELECT * FROM users')
-        return self.cursor.fetchall()
+    def mostrar_usuario_act(self, mail_actual):
+        self.cursor.execute(
+            'SELECT idusers, nombre, apellidos, mail, rol FROM users WHERE mail=%s', (mail_actual,))
+        return self.cursor.fetchone()
+    
+    def mostrar_usuarios(self, mail_actual):
+        self.cursor.execute('SELECT rol FROM users WHERE mail=%s', (mail_actual,))
+        result = self.cursor.fetchone()
+        if result and result[0] == 'admin':
+            self.cursor.execute('SELECT idusers, nombre, apellidos, mail, rol FROM users')
+            return self.cursor.fetchall()
+        else:
+            return None  
+    

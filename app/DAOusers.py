@@ -1,5 +1,5 @@
 # database/dao_usuarios_anime.py
-from models.users import Users
+from users import Users
 
 class DAOusers:
     def __init__(self, connection):

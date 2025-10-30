@@ -18,7 +18,7 @@ class Api:
     def __init__(self, conexion):
         self.app = Flask(__name__)
         self.dao = DAOusers(conexion)
-        self.rutas()
+        self.rutas = Usuarios()
 
     def encendido(self):
         self.app.run()

@@ -2,18 +2,21 @@ from flask import Flask, jsonify, request as req
 from data_base.DAOusers import DAOusers
 
 class Usuarios:
+    def __init__(self, app: Flask, dao: DAOusers):
+        self.app = app
+        self.dao = dao
+        self.rutas()
 
     def rutas(self):
-
         @self.app.route("/autenticar_usuario", methods=["POST"])
         def autenticar_usuario():
-            mail = req.form.get("mail")
-            password = req.form.get("password")
-
+            data = req.json
+            mail = data.get("mail")
+            password = data.get("password")
             user = self.dao.autenticar_usuario(mail, password)
             if user:
                 return jsonify({
-                    "mensaje": "Login correcte",
+                    "mensaje": "Login correcto",
                     "id": user[0],
                     "nombre": user[1],
                     "apellidos": user[2],
@@ -25,7 +28,7 @@ class Usuarios:
 
         @self.app.route("/mostrar_usuario", methods=["GET"])
         def mostrar_usuario():
-            mail = req.args.get("mail")  # p.ex. ?mail=alex@mail.com
+            mail = req.args.get("mail")  
             if not mail:
                 return jsonify({"error": "Debes indicar el mail"}), 400
 

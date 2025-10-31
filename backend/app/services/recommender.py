@@ -5,7 +5,7 @@ MIN_RATINGS_ANIME = 100
 MIN_RATINGS_USER = 10
 MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
-CORRELATION_FILE = "data_base/correlation.json"
+CORRELATION_FILE = "data_base/model/corr_matrix.json"
 
 ANIME_CSV_PATH = "data_base/data/anime.csv"
 RATINGS_CSV_PATH = "data_base/data/rating.csv"

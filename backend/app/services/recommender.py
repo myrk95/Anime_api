@@ -56,7 +56,7 @@ class Recommender:
         # Matriz
         corrMatrix = self.userRatings.corr(method='pearson', min_periods=self.min_periods_corr)
 
-        # COnversión ids a names
+        # Conversión ids a names
         name_map = anime.set_index('anime_id')['name'].to_dict()
         corrMatrix_names = corrMatrix.rename(index=name_map, columns=name_map)
 

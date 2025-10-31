@@ -1,0 +1,67 @@
+import requests
+
+API_URL = "http://127.0.0.1:5000"  # Canvia'l si la teva API corre en un altre host o port
+
+def registrar():
+    print("\n=== Registrar usuari ===")
+    nom = input("Nom: ")
+    cognoms = input("Cognoms: ")
+    mail = input("Correu: ")
+    password = input("Contrasenya: ")
+
+    r = requests.post(f"{API_URL}/usuarios", json={
+        "nombre": nom,
+        "apellidos": cognoms,
+        "mail": mail,
+        "password": password
+    })
+    print("Resposta:", r.json())
+
+def login():
+    print("\n=== Iniciar sessió ===")
+    mail = input("Correu: ")
+    password = input("Contrasenya: ")
+
+    r = requests.post(f"{API_URL}/login", json={
+        "mail": mail,
+        "password": password
+    })
+    data = r.json()
+    print("Resposta:", data)
+    if data.get("status") == "ok":
+        return mail
+    return None
+
+def veure_recomanacions(mail):
+    print("\n=== Recomanacions ===")
+    r = requests.get(f"{API_URL}/recomendaciones/{mail}")
+    data = r.json()
+    if isinstance(data, list):
+        for idx, anime in enumerate(data, start=1):
+            print(f"{idx}. {anime}")
+    else:
+        print("Resposta:", data)
+
+def main():
+    print("=== Front de prova API Anime ===")
+
+    while True:
+        print("\n1. Registrar usuari")
+        print("2. Iniciar sessió i veure recomanacions")
+        print("3. Sortir")
+        opcio = input("> ")
+
+        if opcio == "1":
+            registrar()
+        elif opcio == "2":
+            usuari = login()
+            if usuari:
+                veure_recomanacions(usuari)
+        elif opcio == "3":
+            print("Adeu!")
+            break
+        else:
+            print("Opció no vàlida.")
+
+if __name__ == "__main__":
+    main()

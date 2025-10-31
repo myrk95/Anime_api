@@ -1,6 +1,9 @@
 backend/app/data_base/model/matriz_corr.json
 backend/app/data_base/model/corr_matrix.json
 
+__pycache__/
+*.pyc
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

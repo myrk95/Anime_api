@@ -23,7 +23,7 @@ class DAOusers:
         return self.cursor.rowcount > 0
 
     def eliminar_usuario(self, idusuario):
-        self.cursor.execute('DELETE FROM usuario WHERE id_usuario=%s', (idusuario,))
+        self.cursor.execute('DELETE FROM usuarios WHERE id_usuario=%s', (idusuario,))
         self.connection.commit()
         if self.cursor.rowcount > 0:
             return True
@@ -40,7 +40,7 @@ class DAOusers:
 
     def mostrar_usuario_act(self, mail_actual):
         self.cursor.execute(
-            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuario WHERE mail=%s', (mail_actual,))
+            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios WHERE mail=%s', (mail_actual,))
         return self.cursor.fetchone()
     
     def mostrar_usuarios(self, mail_actual):

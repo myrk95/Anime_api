@@ -1,4 +1,3 @@
-
 from models.users import Users
 
 class DAOusers:
@@ -25,20 +24,22 @@ class DAOusers:
     def eliminar_usuario(self, idusuario):
         self.cursor.execute('DELETE FROM usuarios WHERE id_usuario=%s', (idusuario,))
         self.connection.commit()
-        if self.cursor.rowcount > 0:
-            return True
-        else:
-            return False
+        return self.cursor.rowcount > 0
     
     def autenticar_usuario(self, mail, password):
-        self.cursor.execute('SELECT * FROM usuarios WHERE mail=%s AND password=%s', (mail, password))
+        # Select explicit columns so we don't rely on DB column ordering
+        self.cursor.execute(
+            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios WHERE mail=%s AND password=%s',
+            (mail, password)
+        )
         user = self.cursor.fetchone()
         if user:
             return user
         else:
             return None
 
-    def mostrar_usuario_act(self, mail_actual):
+    # renamed to match routes usage
+    def mostrar_usuario(self, mail_actual):
         self.cursor.execute(
             'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios WHERE mail=%s', (mail_actual,))
         return self.cursor.fetchone()
@@ -50,5 +51,4 @@ class DAOusers:
             self.cursor.execute('SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios')
             return self.cursor.fetchall()
         else:
-            return None  
-    
+            return None

@@ -91,12 +91,6 @@ def pedir_ratings():
 
     total_animes = obtener_animes()
 
-    sugeridos = obtener_top10()
-    if not sugeridos:
-        sugeridos = random.sample(total_animes, min(10, len(total_animes))) if total_animes else []
-
-    print("Sugeridos:", ", ".join(sugeridos))
-
     myRatings = {}
 
     while len(myRatings) < 2:
@@ -155,7 +149,7 @@ def listar_top10():
     if not top10:
         print("No se encontró top10 en el servidor.")
         return
-    print("\n=== Top 10 (más famosos presentes en matriz_corr) ===")
+    print("\n=== Top 10 ===")
     for i, name in enumerate(top10, 1):
         print(f"{i}. {name}")
 

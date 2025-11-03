@@ -97,13 +97,9 @@ def pedir_ratings():
         anime = input("Nombre del anime (o 'fin' per acabar): ").strip()
 
         if anime.lower() == 'fin':
-            if len(myRatings) >= 2:
-                break
-            else:
-                print("Debes evaluar al menos 2 animes.")
-                continue
+            break
 
-        if anime not in total_animes:
+        elif anime not in total_animes:
             print("Anime no encontrado en la base de datos.")
             continue
 

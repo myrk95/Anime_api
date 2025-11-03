@@ -5,7 +5,7 @@ import json
 MIN_RATINGS_ANIME = 100
 MIN_RATINGS_USER = 10
 MAX_RATINGS_USER = 617
-TOP_10_FILE = "backend/app/data_base/model/top_10.json"
+TOP_10_FILE = "backend/app/data_base/model/top10.json"
 
 ANIME_CSV_PATH = "backend/app/data_base/data/anime.csv"
 RATINGS_CSV_PATH = "backend/app/data_base/data/rating.csv"

@@ -6,15 +6,18 @@ from routes.recomendaciones import Recomendaciones
 from flask import Flask
 
 
-host = input("Introduzca el host de la base de datos (localhost por defecto): ")
-user = input("Introduzca el usuario de la base de datos (root por defecto): ")
-password = input("Introduzca la contraseña de la base de datos (123456 por defecto): ")
-database = input("Introduzca el nombre de la base de datos (usuarios_anime por defecto): ")
+def create_connection_with_prompts():
+    host = input("Introduzca el host de la base de datos (localhost por defecto): ")
+    user = input("Introduzca el usuario de la base de datos (root por defecto): ")
+    password = input("Introduzca la contraseña de la base de datos (123456 por defecto): ")
+    database = input("Introduzca el nombre de la base de datos (usuarios_anime por defecto): ")
 
-if host == "" and user == "" and password == "" and database == "":
-    conexion = Connection().conectar()
-else:
-    conexion = Connection(host, user, password, database).conectar()
+    if host == "" and user == "" and password == "" and database == "":
+        conexion = Connection().conectar()
+    else:
+        conexion = Connection(host, user, password, database).conectar()
+    return conexion
+
 
 class Api:
     def __init__(self, conexion):
@@ -27,6 +30,8 @@ class Api:
     def encendido(self):
         self.app.run()
 
-api = Api(conexion)
-api.encendido()
 
+if __name__ == "__main__":
+    conexion = create_connection_with_prompts()
+    api = Api(conexion)
+    api.encendido()

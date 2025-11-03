@@ -23,4 +23,3 @@ class ListaAnime:
                 return jsonify({"error": f"No se ha encontrado {ANIME_JSON_PATH}"}), 404
             except Exception as e:
                 return jsonify({"error": str(e)}), 500
-

@@ -84,7 +84,7 @@ def pedir_ratings():
 
 def ver_recomendaciones(mail):
     ratings = pedir_ratings()
-    r = requests.post(f"{API_URL}/recomendaciones", json={
+    r = requests.post(f"{API_URL}/recommender", json={
         "mail": mail,
         "ratings": ratings
     })

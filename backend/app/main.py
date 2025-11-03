@@ -2,6 +2,7 @@ from data_base.DAOusers import DAOusers
 from data_base.connection import Connection
 from routes.usuarios import Usuarios
 from routes.lista_anime import ListaAnime
+from routes.recomendaciones import Recomendaciones
 from flask import Flask
 
 
@@ -21,6 +22,7 @@ class Api:
         self.dao = DAOusers(conexion)
         self.rutas = Usuarios(self.app, self.dao)
         self.lista_anime = ListaAnime(self.app)
+        self.recomendaciones = Recomendaciones(self.app)
 
     def encendido(self):
         self.app.run()

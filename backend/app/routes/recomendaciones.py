@@ -23,7 +23,7 @@ class Recomendaciones:
                 ratings = data.get("ratings")
 
                 if not ratings:
-                    return jsonify({"error": "Falten valoracions"}), 400
+                    return jsonify({"error": "Faltan valoraciones"}), 400
 
                 recomendaciones = self.recommender.recommend(ratings)
 

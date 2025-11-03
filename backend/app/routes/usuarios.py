@@ -86,10 +86,12 @@ class Usuarios:
 
         @self.app.route("/actualizar_usuario/<int:idusuario>", methods=["PUT"])
         def actualizar_usuario(idusuario):
-            nuevo_nombre = req.form.get("nombre")
-            nuevo_apellidos = req.form.get("apellidos")
-            nuevo_mail = req.form.get("mail")
-            nuevo_password = req.form.get("password")
+            # accept JSON body for PUT as well
+            data = req.get_json()
+            nuevo_nombre = data.get("nombre") if data else None
+            nuevo_apellidos = data.get("apellidos") if data else None
+            nuevo_mail = data.get("mail") if data else None
+            nuevo_password = data.get("password") if data else None
 
             actualizado = self.dao.actualizar_usuario(
                 idusuario, nuevo_nombre, nuevo_apellidos, nuevo_mail, nuevo_password

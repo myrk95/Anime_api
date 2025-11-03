@@ -15,7 +15,10 @@ def registrar():
         "mail": mail,
         "password": password
     })
-    print("Resposta:", r.json())
+    try:
+        print("Resposta:", r.json())
+    except Exception:
+        print("Resposta status:", r.status_code, "text:", r.text)
 
 def login():
     print("\n=== Iniciar sesión ===")
@@ -26,7 +29,12 @@ def login():
         "mail": mail,
         "password": password
     })
-    data = r.json()
+    try:
+        data = r.json()
+    except Exception:
+        print("Error parsing response:", r.text)
+        return None
+
     if "mensaje" in data:
         print("Login correcto!")
         return mail
@@ -36,18 +44,57 @@ def login():
 
 def obtener_animes():
     r = requests.get(f"{API_URL}/lista_anime")
-    data = r.json()
+    try:
+        data = r.json()
+    except Exception as e:
+        print("Error parsing lista_anime response:", e)
+        return []
+
     if isinstance(data, list):
+        # If server returns list of dicts with "anime" key, extract names
+        if len(data) > 0 and isinstance(data[0], dict) and "anime" in data[0]:
+            return [item["anime"] for item in data]
         return data
     else:
         print("Error al obtener animes:", data)
         return []
-    
+
+def obtener_top10():
+
+    r = requests.get(f"{API_URL}/top10")
+    if r.status_code != 200:
+        try:
+            print("No se pudo obtener top10:", r.json())
+        except Exception:
+            print("No se pudo obtener top10, status:", r.status_code, "text:", r.text)
+        return []
+
+    try:
+        data = r.json()
+    except Exception as e:
+        print("Error parsing top10 response:", e)
+        return []
+
+    if isinstance(data, list):
+        if len(data) == 0:
+            return []
+        first = data[0]
+        if isinstance(first, dict) and "anime" in first:
+            return [item.get("anime") for item in data]
+        elif isinstance(first, str):
+            return data
+    print("Formato inesperado de top10:", data)
+    return []
+
 def pedir_ratings():
-    print("\nEvalua algunos animes antes de recomendaciones")
+    print("\nEvalua mínimo 2 animes para obtener recomendaciones.")
 
     total_animes = obtener_animes()
-    sugeridos = random.sample(total_animes, min(10, len(total_animes)))
+
+    sugeridos = obtener_top10()
+    if not sugeridos:
+        sugeridos = random.sample(total_animes, min(10, len(total_animes))) if total_animes else []
+
     print("Sugeridos:", ", ".join(sugeridos))
 
     myRatings = {}
@@ -55,7 +102,6 @@ def pedir_ratings():
     while len(myRatings) < 2:
         anime = input("Nombre del anime (o 'fin' per acabar): ").strip()
 
-        # Comprovem primer si l'usuari vol acabar
         if anime.lower() == 'fin':
             if len(myRatings) >= 2:
                 break
@@ -63,12 +109,10 @@ def pedir_ratings():
                 print("Debes evaluar al menos 2 animes.")
                 continue
 
-        # Si no és 'fin', validem si existeix
         if anime not in total_animes:
             print("Anime no encontrado en la base de datos.")
             continue
 
-        # Entrada del rating
         try:
             rating = int(input(f"Rating de {anime} (1-10): "))
             if 1 <= rating <= 10:
@@ -106,12 +150,22 @@ def ver_recomendaciones(mail):
     else:
         print("Respuesta:", data)
 
+def listar_top10():
+    top10 = obtener_top10()
+    if not top10:
+        print("No se encontró top10 en el servidor.")
+        return
+    print("\n=== Top 10 (más famosos presentes en matriz_corr) ===")
+    for i, name in enumerate(top10, 1):
+        print(f"{i}. {name}")
+
 def main():
     print("=== Front Anime ===")
     while True:
         print("\n1. Registrar usuario")
         print("2. Iniciar sesión y ver recomendaciones")
         print("3. Salir")
+        print("4. Listar Top 10")
         opcio = input("> ")
 
         if opcio == "1":
@@ -123,6 +177,8 @@ def main():
         elif opcio == "3":
             print("Adiós!")
             break
+        elif opcio == "4":
+            listar_top10()
         else:
             print("Opción inválida.")
 

@@ -84,17 +84,25 @@ def pedir_ratings():
 
 def ver_recomendaciones(mail):
     ratings = pedir_ratings()
-    r = requests.post(f"{API_URL}/recommender", json={
+    r = requests.post(f"{API_URL}/recomendaciones", json={
         "mail": mail,
         "ratings": ratings
     })
     print("Status code:", r.status_code)
     print("Respuesta del servidor:", r.text)
-    data = r.json()
+    try:
+        data = r.json()
+    except Exception as e:
+        print("Error parsing JSON:", e)
+        return
+
     if isinstance(data, list):
         print("\n=== Recomendaciones ===")
-        for idx, anime in enumerate(data, start=1):
-            print(f"{idx}. {anime}")
+        for idx, item in enumerate(data, start=1):
+            if isinstance(item, dict) and "anime" in item:
+                print(f"{idx}. {item['anime']} (score: {item.get('score')})")
+            else:
+                print(f"{idx}. {item}")
     else:
         print("Respuesta:", data)
 

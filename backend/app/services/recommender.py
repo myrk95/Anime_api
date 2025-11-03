@@ -5,10 +5,11 @@ MIN_RATINGS_ANIME = 100
 MIN_RATINGS_USER = 10
 MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
-CORRELATION_FILE = "data_base/model/corr_matrix.json"
 
-ANIME_CSV_PATH = "data_base/data/anime.csv"
-RATINGS_CSV_PATH = "data_base/data/rating.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CORRELATION_FILE = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "model", "matriz_corr.json"))
+ANIME_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "anime.csv"))
+RATINGS_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "ratings.csv"))
 
 
 class Recommender:
@@ -69,7 +70,12 @@ class Recommender:
         """Guarda la matriu de correlació en un fitxer JSON"""
         if self.corrMatrix is not None:
             self.corrMatrix.fillna(0, inplace=True)  # JSON no suporta NaN
-            self.corrMatrix.to_json(self.correlation_file)
+            # ensure directory exists
+            dirname = os.path.dirname(self.correlation_file)
+            if dirname and not os.path.exists(dirname):
+                os.makedirs(dirname, exist_ok=True)
+            # save with orient='columns' so keys are names
+            self.corrMatrix.to_json(self.correlation_file, orient='columns')
         else:
             raise ValueError("No hi ha matriu de correlació per guardar")
 
@@ -77,6 +83,7 @@ class Recommender:
         """Carrega la matriu de correlació ja calculada"""
         if not os.path.exists(self.correlation_file):
             raise FileNotFoundError("No hi ha cap matriu entrenada. L'admin ha de cridar train() primer")
+        # read with pandas (orientation should match save)
         self.corrMatrix = pd.read_json(self.correlation_file)
         return self.corrMatrix
 

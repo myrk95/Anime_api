@@ -10,7 +10,7 @@ class Usuarios:
     def rutas(self):
         @self.app.route("/autenticar_usuario", methods=["POST"])
         def autenticar_usuario():
-            data = req.json
+            data = req.get_json()
             mail = data.get("mail")
             password = data.get("password")
             user = self.dao.autenticar_usuario(mail, password)
@@ -64,13 +64,17 @@ class Usuarios:
                 ])
             else:
                 return jsonify({"error": "No tienes permisos o no hay usuarios"}), 403
+            
+        @self.app.route("/registrar_usuario", methods=["POST"])
+        def registrar_usuario():
+            datos = req.get_json(force=True)
+            nombre = datos.get("nombre")
+            apellidos = datos.get("apellidos")
+            mail = datos.get("mail")
+            password = datos.get("password")
 
-        @self.app.route("/crear_usuario", methods=["POST"])
-        def crear_usuario():
-            nombre = req.form.get("nombre")
-            apellidos = req.form.get("apellidos")
-            mail = req.form.get("mail")
-            password = req.form.get("password")
+            if not all([nombre, apellidos, mail, password]):
+                return jsonify({"error": "Faltan datos"}), 400
 
             user = self.dao.crear_usuario(nombre, apellidos, mail, password)
             return jsonify({

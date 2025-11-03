@@ -1,15 +1,15 @@
-import requests
+import requests, random
 
-API_URL = "http://127.0.0.1:5000"  # Canvia'l si la teva API corre en un altre host o port
+API_URL = "http://127.0.0.1:5000"
 
 def registrar():
-    print("\n=== Registrar usuari ===")
+    print("\n=== Registrar usuario ===")
     nom = input("Nom: ")
     cognoms = input("Cognoms: ")
     mail = input("Correu: ")
     password = input("Contrasenya: ")
 
-    r = requests.post(f"{API_URL}/usuarios", json={
+    r = requests.post(f"{API_URL}/registrar_usuario", json={
         "nombre": nom,
         "apellidos": cognoms,
         "mail": mail,
@@ -18,37 +18,92 @@ def registrar():
     print("Resposta:", r.json())
 
 def login():
-    print("\n=== Iniciar sessió ===")
-    mail = input("Correu: ")
-    password = input("Contrasenya: ")
+    print("\n=== Iniciar sesión ===")
+    mail = input("Correo: ")
+    password = input("Contraseña: ")
 
-    r = requests.post(f"{API_URL}/login", json={
+    r = requests.post(f"{API_URL}/autenticar_usuario", json={
         "mail": mail,
         "password": password
     })
     data = r.json()
-    print("Resposta:", data)
-    if data.get("status") == "ok":
+    if "mensaje" in data:
+        print("Login correcto!")
         return mail
-    return None
+    else:
+        print("Error:", data)
+        return None
 
-def veure_recomanacions(mail):
-    print("\n=== Recomanacions ===")
-    r = requests.get(f"{API_URL}/recomendaciones/{mail}")
+def obtener_animes():
+    r = requests.get(f"{API_URL}/lista_anime")
     data = r.json()
     if isinstance(data, list):
+        return data
+    else:
+        print("Error al obtener animes:", data)
+        return []
+    
+def pedir_ratings():
+    print("\nEvalua algunos animes antes de recomendaciones")
+
+    total_animes = obtener_animes()
+    sugeridos = random.sample(total_animes, min(10, len(total_animes)))
+    print("Sugeridos:", ", ".join(sugeridos))
+
+    myRatings = {}
+
+    while len(myRatings) < 2:
+        anime = input("Nombre del anime (o 'fin' per acabar): ").strip()
+
+        # Comprovem primer si l'usuari vol acabar
+        if anime.lower() == 'fin':
+            if len(myRatings) >= 2:
+                break
+            else:
+                print("Debes evaluar al menos 2 animes.")
+                continue
+
+        # Si no és 'fin', validem si existeix
+        if anime not in total_animes:
+            print("Anime no encontrado en la base de datos.")
+            continue
+
+        # Entrada del rating
+        try:
+            rating = int(input(f"Rating de {anime} (1-10): "))
+            if 1 <= rating <= 10:
+                myRatings[anime] = rating
+            else:
+                print("Número inválido. Debe estar entre 1 y 10.")
+        except ValueError:
+            print("Número inválido. Inténtalo de nuevo.")
+
+    return myRatings
+
+
+
+def ver_recomendaciones(mail):
+    ratings = pedir_ratings()
+    r = requests.post(f"{API_URL}/recomendaciones", json={
+        "mail": mail,
+        "ratings": ratings
+    })
+    print("Status code:", r.status_code)
+    print("Respuesta del servidor:", r.text)
+    data = r.json()
+    if isinstance(data, list):
+        print("\n=== Recomendaciones ===")
         for idx, anime in enumerate(data, start=1):
             print(f"{idx}. {anime}")
     else:
-        print("Resposta:", data)
+        print("Respuesta:", data)
 
 def main():
-    print("=== Front de prova API Anime ===")
-
+    print("=== Front Anime ===")
     while True:
-        print("\n1. Registrar usuari")
-        print("2. Iniciar sessió i veure recomanacions")
-        print("3. Sortir")
+        print("\n1. Registrar usuario")
+        print("2. Iniciar sesión y ver recomendaciones")
+        print("3. Salir")
         opcio = input("> ")
 
         if opcio == "1":
@@ -56,12 +111,12 @@ def main():
         elif opcio == "2":
             usuari = login()
             if usuari:
-                veure_recomanacions(usuari)
+                ver_recomendaciones(usuari)
         elif opcio == "3":
-            print("Adeu!")
+            print("Adiós!")
             break
         else:
-            print("Opció no vàlida.")
+            print("Opción inválida.")
 
 if __name__ == "__main__":
     main()

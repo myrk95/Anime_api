@@ -1,4 +1,4 @@
-# database/dao_usuarios_anime.py
+
 from models.users import Users
 
 class DAOusers:

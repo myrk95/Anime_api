@@ -13,24 +13,45 @@
         <input type="password" id="password" placeholder="Contraseña" required>
         <button class="login" onclick="login()">Ingresar</button>
         <a href="registro.html">¿No tienes cuenta? Regístrate</a>
+        <p id="mensaje" style="color:red; margin-top:10px;"></p>
     </div>
 
     <script>
-        function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+      function login() {
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          const mensaje = document.getElementById('mensaje');
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+          if (!email || !password) {
+              mensaje.textContent = 'Por favor, completa todos los campos.';
+              return;
+          }
 
-            const user = users.find(u => u.email === email && u.password === password);
-
-            if (user) {
-                alert(`Bienvenido, ${user.nombre}!`);
-                // Aquí puedes redirigir a otra página
-            } else {
-                alert('Email o contraseña incorrectos');
-            }
-        }
+          fetch('http://127.0.0.1:5000/autenticar_usuario', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mail: email, password: password })
+          })
+          .then(res => res.json())  // <- Faltaba esto
+          .then(data => {
+              if (data.error) {
+                  mensaje.textContent = data.error;
+              } else {
+                  // Guardar usuario en localStorage
+                  localStorage.setItem('usuarioActual', JSON.stringify({
+                      nombre: data.nombre,
+                      apellidos: data.apellidos,
+                      mail: email,
+                      rol: data.rol || 'usuario'
+                  }));
+                  window.location.href = 'dashboard.html';
+              }
+          })
+          .catch(err => {
+              console.error(err);
+              mensaje.textContent = 'Error al conectar con el servidor.';
+          });
+      }
     </script>
 </body>
 </html>

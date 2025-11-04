@@ -7,7 +7,7 @@ MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CORRELATION_FILE = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "model", "matriz_corr.json"))
+CORRELATION_FILE = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "matriz_corr.json"))
 ANIME_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "anime.csv"))
 RATINGS_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "ratings.csv"))
 

@@ -4,7 +4,7 @@ from routes.usuarios import Usuarios
 from routes.lista_anime import ListaAnime
 from routes.recomendaciones import Recomendaciones
 from flask import Flask
-
+from flask_cors import CORS
 
 def create_connection_with_prompts():
     host = input("Introduzca el host de la base de datos (localhost por defecto): ")
@@ -22,6 +22,7 @@ def create_connection_with_prompts():
 class Api:
     def __init__(self, conexion):
         self.app = Flask(__name__)
+        CORS(self.app)
         self.dao = DAOusers(conexion)
         self.rutas = Usuarios(self.app, self.dao)
         self.lista_anime = ListaAnime(self.app)

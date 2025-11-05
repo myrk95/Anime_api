@@ -1,95 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Anime API</title>
-<link rel="stylesheet" href="estilos.css">
-<style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; }
-    .container { max-width: 800px; margin: 50px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
-    button { margin: 5px; padding: 10px 15px; border: none; border-radius: 5px; background: #007BFF; color: #fff; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    h2 { color: #333; }
-    #resultado { margin-top: 20px; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 5px 0; border-bottom: 1px solid #ddd; }
-</style>
+    <link rel="stylesheet" href="estilos.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Anime API</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <!-- JS libraries for DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 </head>
+
 <body>
-<div class="container">
-    <h2>Dashboard Anime API</h2>
-    <p id="bienvenida"></p>
+    <div class="container">
+        <h2>Dashboard Anime API</h2>
+        <p id="bienvenida"></p>
 
-    <button onclick="mostrarPerfil()">Mostrar mi perfil</button>
-    <button onclick="mostrarUsuarios()">Mostrar todos los usuarios</button>
-    <button onclick="cerrarSesion()">Cerrar sesión</button>
+        <button onclick="mostrarPerfil()">Mi perfil</button>
+        <button onclick="mostrarUsuarios()">Usuarios</button>
+        <button onclick="mostrarListaAnime()">Lista de Animes</button>
+        <button onclick="mostrarTop10()">Top 10 Animes</button>
+        <button onclick="cerrarSesion()">Cerrar sesión</button>
 
-    <div id="resultado"></div>
-</div>
+        <div id="resultado"></div>
+    </div>
 
-<script>
-let usuarioActual;
+    <script>
+        let usuarioActual;
 
-try {
-    usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-    if (!usuarioActual || !usuarioActual.mail) throw 'Debes iniciar sesión primero.';
-    document.getElementById('bienvenida').innerText = `Bienvenido, ${usuarioActual.nombre} ${usuarioActual.apellidos}`;
-} catch(err) {
-    document.getElementById('resultado').innerHTML = `<p style="color:red">${err}</p>`;
-    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
-}
+        try {
+            usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+            if (!usuarioActual || !usuarioActual.mail) throw 'Debes iniciar sesión primero.';
+            document.getElementById('bienvenida').innerText = `Bienvenido, ${usuarioActual.nombre} ${usuarioActual.apellidos}`;
+        } catch (err) {
+            document.getElementById('resultado').innerHTML = `<p style="color:red">${err}</p>`;
+            setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+        }
 
-// Mostrar perfil
-function mostrarPerfil() {
-    fetch(`http://127.0.0.1:5000/mostrar_usuario?mail=${usuarioActual.mail}`)
-        .then(res => res.json())
-        .then(data => {
-            if(data.error) {
-                document.getElementById('resultado').innerHTML = `<p style="color:red">${data.error}</p>`;
-            } else {
-                document.getElementById('resultado').innerHTML = `
-                    <h3>Mi Perfil</h3>
-                    <p>Nombre: ${data.nombre}</p>
-                    <p>Apellidos: ${data.apellidos}</p>
-                    <p>Email: ${data.mail}</p>
-                    <p>Rol: ${data.rol}</p>
+        // --- Perfil ---
+        function mostrarPerfil() {
+            fetch(`http://127.0.0.1:5000/mostrar_usuario?mail=${usuarioActual.mail}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw data.error;
+                    document.getElementById('resultado').innerHTML = `
+                <h3>Mi Perfil</h3>
+                <p><strong>Nombre:</strong> ${data.nombre}</p>
+                <p><strong>Apellidos:</strong> ${data.apellidos}</p>
+                <p><strong>Email:</strong> ${data.mail}</p>
+                <p><strong>Rol:</strong> ${data.rol}</p>
+            `;
+                })
+                .catch(err => mostrarError(err));
+        }
+
+        // --- Usuarios ---
+        function mostrarUsuarios() {
+            fetch(`http://127.0.0.1:5000/mostrar_usuarios?mail=${usuarioActual.mail}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw data.error;
+                    let html = '<h3>Usuarios Registrados</h3><ul>';
+                    data.forEach(u => {
+                        html += `<li><strong>${u.nombre} ${u.apellidos}</strong> - ${u.mail} - ${u.rol}</li>`;
+                    });
+                    html += '</ul>';
+                    document.getElementById('resultado').innerHTML = html;
+                })
+                .catch(err => mostrarError(err));
+        }
+
+        // --- Lista completa de animes (con DataTable) ---
+        function mostrarListaAnime() {
+            fetch("http://127.0.0.1:5000/lista_anime")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw data.error;
+
+                    // Construimos la tabla
+                    let html = `
+                <h3>Lista de Animes</h3>
+                <table id="animeTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                    data.forEach(anime => {
+                        const nombre = anime.title || anime.name || anime.nombre || "Título desconocido";
+                        html += `<tr><td>${nombre}</td></tr>`;
+                    });
+
+                    html += `
+                    </tbody>
+                </table>
+            `;
+
+                    document.getElementById('resultado').innerHTML = html;
+
+                    // Inicializamos DataTable
+                    $(document).ready(function () {
+                        $('#animeTable').DataTable({
+                            pageLength: 10,
+                            lengthMenu: [10, 25, 50, 100],
+                            language: {
+                                search: "Buscar:",
+                                lengthMenu: "Mostrar _MENU_ animes por página",
+                                info: "Mostrando _START_ a _END_ de _TOTAL_ animes",
+                                paginate: { previous: "Anterior", next: "Siguiente" },
+                                zeroRecords: "No se encontraron animes"
+                            }
+                        });
+                    });
+                })
+                .catch(err => mostrarError(err));
+        }
+
+        // --- Top 10 ---
+        function mostrarTop10() {
+            fetch("http://127.0.0.1:5000/top10")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw data.error;
+
+                    let html = "<h3>Top 10 Animes</h3><ol>";
+                    data.forEach((anime, i) => {
+                        html += `
+                    <li>
+                        <strong>${i + 1}.</strong> ${anime.anime || 'Título desconocido'}
+                        <span class="count">(${anime.count ?? 0} valoraciones)</span>
+                    </li>
                 `;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('resultado').innerHTML = `<p style="color:red">Error al conectar con el servidor</p>`;
-        });
-}
+                    });
+                    html += "</ol>";
 
-// Mostrar todos los usuarios
-function mostrarUsuarios() {
-    fetch(`http://127.0.0.1:5000/mostrar_usuarios?mail=${usuarioActual.mail}`)
-        .then(res => res.json())
-        .then(data => {
-            if(data.error) {
-                document.getElementById('resultado').innerHTML = `<p style="color:red">${data.error}</p>`;
-            } else {
-                let html = '<h3>Usuarios Registrados</h3><ul>';
-                data.forEach(u => {
-                    html += `<li><strong>${u.nombre} ${u.apellidos}</strong> - ${u.mail} - ${u.rol}</li>`;
-                });
-                html += '</ul>';
-                document.getElementById('resultado').innerHTML = html;
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('resultado').innerHTML = `<p style="color:red">Error al conectar con el servidor</p>`;
-        });
-}
+                    document.getElementById('resultado').innerHTML = html;
+                })
+                .catch(err => mostrarError(err));
+        }
 
-// Cerrar sesión
-function cerrarSesion() {
-    localStorage.removeItem('usuarioActual');
-    window.location.href = 'login.html';
-}
-</script>
+        // --- Cerrar sesión ---
+        function cerrarSesion() {
+            localStorage.removeItem('usuarioActual');
+            window.location.href = 'index.html';
+        }
+
+        // --- Mostrar errores ---
+        function mostrarError(err) {
+            document.getElementById('resultado').innerHTML = `<p style="color:red">${err}</p>`;
+        }
+    </script>
 </body>
+
 </html>

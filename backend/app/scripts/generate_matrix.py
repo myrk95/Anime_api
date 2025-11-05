@@ -5,10 +5,10 @@ MIN_RATINGS_ANIME = 100
 MIN_RATINGS_USER = 10
 MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
-CORRELATION_FILE = "../data_base/data/matriz_corr.json"
+CORRELATION_FILE = "./data_base/data/matriz_corr.json"
 
-ANIME_CSV_PATH = "../data_base/data/anime.csv"
-RATINGS_CSV_PATH = "../data_base/data/rating.csv"
+ANIME_CSV_PATH = "./data_base/data/anime.csv"
+RATINGS_CSV_PATH = "./data_base/data/rating.csv"
 
 
 ratings = pd.read_csv(RATINGS_CSV_PATH, header = 0)

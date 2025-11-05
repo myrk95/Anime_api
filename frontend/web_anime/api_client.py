@@ -97,7 +97,7 @@ def pedir_ratings():
         anime = input("Nombre del anime (o 'fin' per acabar): ").strip()
 
         if anime.lower() == 'fin':
-            break
+            return
 
         elif anime not in total_animes:
             print("Anime no encontrado en la base de datos.")
@@ -118,6 +118,10 @@ def pedir_ratings():
 
 def ver_recomendaciones(mail):
     ratings = pedir_ratings()
+    if ratings is None:
+        print("\nVolviendo al menú principal...")
+        return
+    
     r = requests.post(f"{API_URL}/recomendaciones", json={
         "mail": mail,
         "ratings": ratings

@@ -38,17 +38,37 @@ class DAOusers:
         else:
             return None
 
-    # renamed to match routes usage
-    def mostrar_usuario(self, mail_actual):
+    def mostrar_usuario(self, mail):
+        """Get a single user's information"""
         self.cursor.execute(
-            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios WHERE mail=%s', (mail_actual,))
-        return self.cursor.fetchone()
+            'SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios WHERE mail=%s', 
+            (mail,)
+        )
+        user = self.cursor.fetchone()
+        if user:
+            return {
+                'id': user[0],
+                'nombre': user[1],
+                'apellidos': user[2],
+                'mail': user[3],
+                'rol': user[4]
+            }
+        return None
     
-    def mostrar_usuarios(self, mail_actual):
-        self.cursor.execute('SELECT rol FROM usuarios WHERE mail=%s', (mail_actual,))
+    def mostrar_usuarios(self):
+        """Get all users without role check"""
+        self.cursor.execute('SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios')
+        users = self.cursor.fetchall()
+        return [{
+            'id': user[0],
+            'nombre': user[1],
+            'apellidos': user[2],
+            'mail': user[3],
+            'rol': user[4]
+        } for user in users]
+    
+    def get_user_role(self, mail):
+        """Get user's role"""
+        self.cursor.execute('SELECT rol FROM usuarios WHERE mail=%s', (mail,))
         result = self.cursor.fetchone()
-        if result and result[0] == 'admin':
-            self.cursor.execute('SELECT id_usuario, nombre, apellidos, mail, rol FROM usuarios')
-            return self.cursor.fetchall()
-        else:
-            return None
+        return result[0] if result else None

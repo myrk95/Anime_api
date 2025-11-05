@@ -7,7 +7,7 @@ MAX_RATINGS_USER = 617
 MIN_PERIODS_CORR = 500
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CORRELATION_FILE = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "matriz_corr.json"))
+CORRELATION_FILE = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "model", "matriz_corr.json"))
 ANIME_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "anime.csv"))
 RATINGS_CSV_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "data_base", "data", "ratings.csv"))
 
@@ -67,7 +67,7 @@ class Recommender:
         self._save_correlation()
 
     def _save_correlation(self):
-        """Guarda la matriu de correlació en un fitxer JSON"""
+        """Guarda matriz de correlación en un archivo JSON"""
         if self.corrMatrix is not None:
             self.corrMatrix.fillna(0, inplace=True)  # JSON no suporta NaN
             # ensure directory exists
@@ -77,23 +77,23 @@ class Recommender:
             # save with orient='columns' so keys are names
             self.corrMatrix.to_json(self.correlation_file, orient='columns')
         else:
-            raise ValueError("No hi ha matriu de correlació per guardar")
+            raise ValueError("No hay matriz de correlación para guardar")
 
     def load_correlation(self):
-        """Carrega la matriu de correlació ja calculada"""
+        """Cargar matriz de correlación ya calculada"""
         if not os.path.exists(self.correlation_file):
-            raise FileNotFoundError("No hi ha cap matriu entrenada. L'admin ha de cridar train() primer")
+            raise FileNotFoundError("No hay matriz entrenada")
         # read with pandas (orientation should match save)
         self.corrMatrix = pd.read_json(self.correlation_file)
         return self.corrMatrix
 
     def recommend(self, myRatings: dict, top_n=10):
         """
-        Genera recomanacions a partir dels ratings de l'usuari.
+        Genera recomendaciones basadas en las valoraciones del usuario.
         myRatings: dict {anime_name: rating}
         """
         if self.corrMatrix is None:
-            raise ValueError("Cal carregar la matriu de correlació abans de recomanar")
+            raise ValueError("Hay que cargar la matriz de correlación antes de recomendar")
 
         myRatingsSeries = pd.Series(myRatings, name=0)
         simCandidates = pd.Series(dtype='float64')

@@ -3,6 +3,7 @@ from data_base.connection import Connection
 from routes.usuarios import Usuarios
 from routes.lista_anime import ListaAnime
 from routes.recomendaciones import Recomendaciones
+from routes.admin import AdminRoutes
 from flask import Flask
 from flask_cors import CORS
 
@@ -27,6 +28,7 @@ class Api:
         self.rutas = Usuarios(self.app, self.dao)
         self.lista_anime = ListaAnime(self.app)
         self.recomendaciones = Recomendaciones(self.app)
+        self.admin_routes = AdminRoutes(self.app, self.dao)
 
     def encendido(self):
         self.app.run()

@@ -31,7 +31,10 @@ Api con interfaz para cliente en web y admin en consola
 
 ## 💻 Iniciar Front-end: Cliente
 
-1. Abrir un terminal dentro de la carpeta **`frontend/web_anime`**
+1. Abrir un terminal dentro de la carpeta **`frontend/web_anime`*
+   ```bash
+   python -m http.server 5500
+   ```
 
 ## 🎮 Interactuar con la Web para cliente 
 
